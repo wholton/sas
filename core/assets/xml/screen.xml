@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<screen-list>
+    
+    <!-- The opening screen showing our software company's logo -->
+    <screen id="company">
+        <type>splash</type>
+        <!-- milliseconds -->
+        <duration>
+            <display>3000</display>
+            <fade>2000</fade>
+        </duration>
+        <transition>trailer1</transition>
+        <texture>
+	        <name>company-splash</name>
+	        <count>1</count>
+	        <type>.png</type> 
+        </texture>
+    </screen>
+    
+    <!-- The trailer screen which displays our games opening trailer -->
+    <screen id="trailer1">
+        <type>splash</type>
+        <!-- milliseconds -->
+        <duration>
+            <display>3000</display>
+            <fade>2000</fade>
+        </duration>
+        <transition>main-menu</transition>
+        <texture>
+	        <name>trailer-splash</name>
+	        <count>1</count>
+	        <type>.png</type> 
+        </texture>
+    </screen>
+    
+    <!-- The loading splash screen which displays a random game-specific name -->
+    <screen id="loading-game">
+        <type>splash</type>
+        <!-- milliseconds -->
+        <duration>
+            <display>3000</display>
+            <fade>2000</fade>
+        </duration>
+        <transition>game</transition>
+        <texture>
+	        <name>loading-game-splash</name>
+	        <count>4</count>
+	        <type>.png</type> 
+        </texture>
+    </screen>
+    
+    <!-- The main menu screen where players are allowed to select which screen to transition to -->
+    <screen id="main-menu">
+        <type>menu</type>
+        <heading>
+            <text>Thank you, Robutcus.</text>
+       		<font>
+       		    <!-- Currently GRAY and OPAQUE -->
+	            <color>
+	                <r>160</r>
+	                <g>160</g>
+	                <b>160</b>
+	                <a>1</a>
+				</color>
+	            <size>80</size>
+	            <name>CRAYON__.TTF</name>
+	        </font>
+        </heading>
+        <background-texture>
+	        <name>main-menu-background</name>
+	        <count>1</count>
+	        <type>.png</type> 
+        </background-texture>
+        <transition-button-list>
+            <!-- These will appear in order, vertically -->
+            <transition-button id = "new-game">
+	            <text>NEW GAME</text>
+	            <transition>new-game</transition>
+		        <font>
+		            <color>
+		                <r>0</r>
+		                <g>0</g>
+		                <b>0</b>
+		                <a>1</a>
+					</color>
+		            <size>40</size>
+		            <name>CRAYON__.TTF</name>
+		        </font>
+            </transition-button>
+            <transition-button id = "continue">
+                <text>CONTINUE</text>
+                <transition>continue</transition>
+		        <font>
+		            <color>
+		                <r>0</r>
+		                <g>0</g>
+		                <b>0</b>
+		                <a>1</a>
+					</color>
+		            <size>40</size>
+		            <name>CRAYON__.TTF</name>
+		        </font>
+            </transition-button>
+            <transition-button id = "options">
+                <text>OPTIONS</text>
+                <transition>options</transition>
+		        <font>
+		            <color>
+		                <r>0</r>
+		                <g>0</g>
+		                <b>0</b>
+		                <a>1</a>
+					</color>
+		            <size>40</size>
+		            <name>CRAYON__.TTF</name>
+		        </font>
+            </transition-button>
+            <transition-button id = "exit">
+                <text>EXIT</text>
+                <transition>exit</transition>
+		        <font>
+		            <color>
+		                <r>0</r>
+		                <g>0</g>
+		                <b>0</b>
+		                <a>1</a>
+					</color>
+		            <size>40</size>
+		            <name>CRAYON__.TTF</name>
+		        </font>
+            </transition-button>
+        </transition-button-list>
+    </screen>
+    
+    <screen id="new-game">
+        <type>game</type>
+    </screen>
+    
+    <screen id="continue">
+        <type>game</type>
+    </screen>
+    
+    <screen id="options">
+        <type>options</type>
+        <heading>
+            <text>Options</text>
+       		<font>
+       		    <!-- Currently GRAY and OPAQUE -->
+	            <color>
+	                <r>160</r>
+	                <g>160</g>
+	                <b>160</b>
+	                <a>1</a>
+				</color>
+	            <size>80</size>
+	            <name>CRAYON__.TTF</name>
+	        </font>
+        </heading>
+        <background-texture>
+	        <name>options-background</name>
+	        <count>1</count>
+	        <type>.png</type> 
+        </background-texture>
+        <slider-list>
+            <slider id = "master-volume">
+		        <label>
+		            <text>Master Volume</text>
+		       		<font>
+		       		    <!-- Currently GRAY and OPAQUE -->
+			            <color>
+			                <r>0</r>
+			                <g>0</g>
+			                <b>0</b>
+			                <a>1</a>
+						</color>
+			            <size>40</size>
+			            <name>CRAYON__.TTF</name>
+			        </font>
+		        </label>
+		        <minimum>0</minimum>
+		        <maximum>100</maximum>
+		        <increment>1</increment>
+		        <verticle>false</verticle>
+            </slider>
+            
+        </slider-list>
+        <checkbox-list>
+            <checkbox id = "gl30">
+                <text>Use GL30</text>
+            </checkbox>
+            <checkbox id = "fullscreen">
+                <text>Fullscreen</text>
+            </checkbox>
+            <checkbox id = "resizable">
+                <text>Resizable</text>
+            </checkbox>
+            <checkbox id = "vsync">
+                <text>Use VSync</text>
+            </checkbox>
+            <checkbox id = "skip-intro">
+                <text>Skip Intro</text>
+            </checkbox>
+        </checkbox-list>
+    </screen>
+    
+    <screen id = "ending">
+        <type>end</type>
+        <transition>main-menu</transition>
+    </screen>
+    
+    <screen id = "exit">
+        <type>end</type>
+        <transition>exit-application</transition>
+    </screen>
+    
+</screen-list>
