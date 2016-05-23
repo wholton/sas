@@ -12,7 +12,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.SaSGame;
 import com.mygdx.game.screen.AbstractScreen;
-import com.mygdx.game.screen.MenuScreen;
+import com.mygdx.game.screen.MainMenuScreen;
 
 public class GameScreen extends AbstractScreen {
   // TODO: a very rough class, just an example
@@ -53,7 +53,7 @@ public class GameScreen extends AbstractScreen {
       @Override
       public boolean keyDown(int keycode) {
         if (keycode == Keys.ESCAPE) {
-          SaSGame.getInstance().setScreen(new MenuScreen());
+          SaSGame.getInstance().setScreen(new MainMenuScreen());
         }
         return true;
       }

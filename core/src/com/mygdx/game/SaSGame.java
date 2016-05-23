@@ -1,17 +1,33 @@
 package com.mygdx.game;
 
+import java.util.Stack;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.mygdx.game.asset.AssetHelper;
 import com.mygdx.game.data.GamePreferences;
+import com.mygdx.game.screen.AbstractScreen;
 import com.mygdx.game.screen.LoadingScreen;
 
 public class SaSGame extends Game {
 
+  /**
+   * 
+   */
+  private Stack<AbstractScreen> screensStack;
+  
+  /**
+   * A logger for FPS.
+   */
   private static final FPSLogger FPS_LOGGER = new FPSLogger();
 
+  /**
+   * Whether FPS should be logged.
+   */
+  private static final boolean LOG_FPS = false;
+  
   /**
    * The name this object will be registered as inside the logger.
    */
@@ -67,11 +83,13 @@ public class SaSGame extends Game {
   public void create() {
     Gdx.app.log(LOG_NAME, "Creating");
 
-    // Load the game preferences
-    GamePreferences.getInstance();
-
+    screensStack = new Stack<AbstractScreen>();
+    //screensStack.push(new LoadingScreen());
     // Load the assets then transition to the first screen
     setScreen(new LoadingScreen());
+    
+    // Load the game preferences
+    GamePreferences.getInstance();
 
     // TODO: Load game data.
   }
@@ -83,20 +101,26 @@ public class SaSGame extends Game {
     // Dispose of all of the game assets
     AssetHelper.MANAGER.dispose();
 
-    super.dispose();
     // TODO: Save game data.
+    super.dispose();
   }
 
   @Override
   public void render() {
     super.render();
-    FPS_LOGGER.log();
+    if (LOG_FPS) {
+      FPS_LOGGER.log();
+    }
   }
 
   @Override
   public void resize(int width, int height) {
     Gdx.app.log(LOG_NAME, "Resizing game to: " + width + " x " + height);
     super.resize(width, height);
+    for (AbstractScreen screen : screensStack) {
+      screen.resize(width, height);
+    }
+    GamePreferences.getInstance().saveScreenSizeData(width, height);
   }
 
   @Override

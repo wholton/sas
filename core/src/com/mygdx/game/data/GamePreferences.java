@@ -17,7 +17,7 @@ public class GamePreferences {
   /**
    * The name this object will be registered as inside the logger.
    */
-  private final String logName;
+  private static final String LOG_NAME = GamePreferences.class.getSimpleName();
 
   /**
    * The name of the Preferences file, which (on Windows) may be found in "C:/Users/<USER>/.prefs".
@@ -86,10 +86,37 @@ public class GamePreferences {
   private static final String SKIP_INTRO_PREFERENCES_NAME = "SKIPINTRO";
 
   /**
+   * Whether or not the intro will be skipped.
+   */
+  private int screenWidth;
+
+  /**
+   * The name of the skip intro attribute within the preferences file.
+   */
+  private static final String SCREEN_WIDTH_PREFERENCES_NAME = "SCREENWIDTH";
+  
+  /**
+   * Whether or not the intro will be skipped.
+   */
+  private int screenHeight;
+
+  /**
+   * The name of the skip intro attribute within the preferences file.
+   */
+  private static final String SCREEN_HEIGHT_PREFERENCES_NAME = "SCREENHEIGHT";
+  
+  /**
    * The singleton instance of the game preferences class.
    */
   private static GamePreferences instance;
 
+  /**
+   * The constructor of a singleton class should always be private.
+   */
+  private GamePreferences() {
+    loadData();
+  }
+  
   public static GamePreferences getInstance() {
     // Ensures there is only one instance of the game preferences class.
     if (instance == null) {
@@ -99,17 +126,10 @@ public class GamePreferences {
   }
 
   /**
-   * The constructor of a singleton class should always be private.
-   */
-  private GamePreferences() {
-    logName = this.getClass().getName();
-    loadData();
-  }
-
-  /**
    * Applies the effects of all game preferences.
    */
   private void applyEffects() {
+    Gdx.app.log(LOG_NAME, "Applying preferences");
     // Apply volume effects
     updateMusic();
     updateSound();
@@ -131,9 +151,8 @@ public class GamePreferences {
   }
 
   public void updateFullscreen() {
-    if (Gdx.graphics.isFullscreen() && !fullscreen) {
-      Gdx.graphics.setWindowedMode(Gdx.graphics.getDisplayMode().width,
-          Gdx.graphics.getDisplayMode().height);
+    if (!Gdx.graphics.isFullscreen() || Gdx.graphics.isFullscreen() && !fullscreen) {
+      Gdx.graphics.setWindowedMode(screenWidth, screenHeight);
     } else if (!Gdx.graphics.isFullscreen() && fullscreen) {
       Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
     }
@@ -143,6 +162,7 @@ public class GamePreferences {
    * Loads the game preferences data from the preferences file and applies their effects.
    */
   public void loadData() {
+    Gdx.app.log(LOG_NAME, "Loading preferences");
     Preferences preferences = Gdx.app.getPreferences(PREFERENCES_NAME);
 
     masterVolume = preferences.getFloat(MASTER_VOLUME_PREFERENCES_NAME, 1);
@@ -151,6 +171,10 @@ public class GamePreferences {
     vsync = preferences.getBoolean(USE_VSYNC_PREFERENCES_NAME, false);
     fullscreen = preferences.getBoolean(USE_FULLSCREEN_PREFERENCES_NAME, true);
     skipIntro = preferences.getBoolean(SKIP_INTRO_PREFERENCES_NAME, true);
+    screenHeight = preferences.getInteger(SCREEN_HEIGHT_PREFERENCES_NAME, 
+        Gdx.graphics.getDisplayMode().height);
+    screenWidth = preferences.getInteger(SCREEN_WIDTH_PREFERENCES_NAME, 
+        Gdx.graphics.getDisplayMode().width); 
 
     applyEffects();
   }
@@ -159,6 +183,7 @@ public class GamePreferences {
    * Saves the game preferences data from the preferences file and applies their effects.
    */
   public void saveData() {
+    Gdx.app.log(LOG_NAME, "Saving preferences");
     Preferences prefs = Gdx.app.getPreferences(PREFERENCES_NAME);
 
     prefs.putFloat(MASTER_VOLUME_PREFERENCES_NAME, masterVolume);
@@ -171,6 +196,22 @@ public class GamePreferences {
     prefs.flush();
 
     applyEffects();
+  }
+  
+  /**
+   * Saves the current height and width of the game to the preferences file.
+   */
+  public void saveScreenSizeData(int screenWidth, int screenHeight) {
+    Gdx.app.log(LOG_NAME, "Saving screen size");
+    this.screenWidth = screenWidth;
+    this.screenHeight = screenHeight;
+    
+    Preferences prefs = Gdx.app.getPreferences(PREFERENCES_NAME);
+    
+    prefs.putInteger(SCREEN_WIDTH_PREFERENCES_NAME, screenWidth);
+    prefs.putInteger(SCREEN_HEIGHT_PREFERENCES_NAME, screenHeight);
+    
+    prefs.flush();
   }
 
   public float getMasterVolume() {
@@ -195,6 +236,14 @@ public class GamePreferences {
 
   public boolean isVSync() {
     return vsync;
+  }
+  
+  public int getScreenWidth() {
+    return screenWidth;
+  }
+  
+  public int getScreenHeight() {
+    return screenHeight;
   }
 
   public void setFullscreen(boolean fullscreen) {

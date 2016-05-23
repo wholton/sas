@@ -21,12 +21,12 @@ public class LevelMenuScreen extends AbstractScreen {
   /**
    * The spacing between the heading the options.
    */
-  protected final float TITLE_SPACE = 60;
+  protected static final float TITLE_SPACE = 60;
 
   /**
    * The spacing between the options.
    */
-  protected final float OPTION_SPACE = 20;
+  protected static final float OPTION_SPACE = 20;
 
   protected Stage stage;
   protected Table table;

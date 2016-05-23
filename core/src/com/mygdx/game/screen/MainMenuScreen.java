@@ -36,7 +36,7 @@ import aurelienribon.tweenengine.TweenManager;
  * @author Bebop
  * @version 0.0.3.0
  */
-public class MenuScreen extends AbstractScreen {
+public class MainMenuScreen extends AbstractScreen {
 
   /**
    * The stage on which we will draw the table and its buttons. This must be disposed of.

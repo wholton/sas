@@ -267,7 +267,7 @@ public class OptionsScreen extends AbstractScreen {
       @Override
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
         gamePreferences.saveData();
-        SaSGame.getInstance().setScreen(new MenuScreen());
+        SaSGame.getInstance().setScreen(new MainMenuScreen());
         return true;
       }
     });
@@ -279,7 +279,7 @@ public class OptionsScreen extends AbstractScreen {
       @Override
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
         gamePreferences.loadData();
-        SaSGame.getInstance().setScreen(new MenuScreen());
+        SaSGame.getInstance().setScreen(new MainMenuScreen());
         return true;
       }
     });

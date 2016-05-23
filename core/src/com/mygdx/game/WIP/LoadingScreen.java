@@ -5,7 +5,7 @@ import com.mygdx.game.SaSGame;
 import com.mygdx.game.asset.AssetHelper;
 import com.mygdx.game.data.GamePreferences;
 import com.mygdx.game.screen.AbstractScreen;
-import com.mygdx.game.screen.MenuScreen;
+import com.mygdx.game.screen.MainMenuScreen;
 import com.mygdx.game.screen.SplashScreen;
 
 public class LoadingScreen extends AbstractScreen {
@@ -31,9 +31,9 @@ public class LoadingScreen extends AbstractScreen {
 
   public void transitionScreen() {
     if (GamePreferences.getInstance().isSkipIntro()) {
-      SaSGame.getInstance().setScreen(new MenuScreen());
+      SaSGame.getInstance().setScreen(new MainMenuScreen());
     } else {
-      final SplashScreen trailer = new SplashScreen(2, 2, new MenuScreen(),
+      final SplashScreen trailer = new SplashScreen(2, 2, new MainMenuScreen(),
           AssetHelper.TRAILER_SPLASH1);
       final SplashScreen company = new SplashScreen(2, 2, trailer, AssetHelper.COMPANY_SPLASH1);
       SaSGame.getInstance().setScreen(company);
