@@ -3,7 +3,7 @@ package com.mygdx.game.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.mygdx.game.asset.AssetHelper;
+import com.mygdx.game.Assets;
 
 public class GameScreen extends AbstractScreen {
   // TODO: a very rough class, just an example
@@ -12,17 +12,17 @@ public class GameScreen extends AbstractScreen {
   private float elapsedTime = 0;
 
   public GameScreen() {
-    textureAtlas = AssetHelper.MANAGER.get(AssetHelper.ATLAS);
-    animation = new Animation(1 / 10f, textureAtlas.getRegions());
+    textureAtlas = game.getAssetManager().get(Assets.ATLAS, TextureAtlas.class);
+    animation = new Animation(1 / 3f, textureAtlas.findRegions("stand right"));
   }
 
   @Override
   public void render(float delta) {
     super.render(delta);
-    batch.begin();
+    game.getSpriteBatch().begin();
     elapsedTime += Gdx.graphics.getDeltaTime();
-    batch.draw(animation.getKeyFrame(elapsedTime, true), 0, 0);
-    batch.end();
+    game.getSpriteBatch().draw(animation.getKeyFrame(elapsedTime, true), 0, 0);
+    game.getSpriteBatch().end();
   }
 
 }

@@ -1,37 +1,17 @@
 package com.mygdx.game;
 
-import java.util.Stack;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.FPSLogger;
-import com.mygdx.game.asset.AssetHelper;
-import com.mygdx.game.data.GamePreferences;
-import com.mygdx.game.screen.AbstractScreen;
-import com.mygdx.game.screen.LoadingScreen;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.game.screen.AssetLoadingScreen;
+import com.mygdx.game.workinprogress.InputController;
+
+import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
 public class SaSGame extends Game {
-
-  /**
-   * 
-   */
-  private Stack<AbstractScreen> screensStack;
-  
-  /**
-   * A logger for FPS.
-   */
-  private static final FPSLogger FPS_LOGGER = new FPSLogger();
-
-  /**
-   * Whether FPS should be logged.
-   */
-  private static final boolean LOG_FPS = false;
-  
-  /**
-   * The name this object will be registered as inside the logger.
-   */
-  private static final String LOG_NAME = SaSGame.class.getName();
 
   /**
    * The string to be displayed at the top of the application.
@@ -46,33 +26,55 @@ public class SaSGame extends Game {
    * of an update (0 is alpha, 1 is beta, 2 is release candidate, 3 is release). Fourth digit
    * represents the level of completion of the development stage.
    * 
-   * <p>
-   * EXAMPLES: 1.2.0.1 instead of 1.2-a1 1.2.1.2, instead of 1.2-b2 (beta with some bug fixes),
+   * <p>EXAMPLES: 1.2.0.1 instead of 1.2-a1 1.2.1.2, instead of 1.2-b2 (beta with some bug fixes),
    * 1.2.2.3 instead of 1.2-rc3 (release candidate), 1.2.3.0 instead of 1.2-r (commercial
    * distribution), 1.2.3.5 instead of 1.2-r5 (commercial distribution with many bug fixes)
    */
   public static final String VERSION = "0.0.3.0";
 
   /**
-   * The singleton instance of the class. Lazy initialization.
+   * The game's asset helper class, which includes functions for asset management.
    */
-  private static SaSGame instance;
+  private AnnotationAssetManager assetManager;
+
+  private AudioHelper audioHelper;
+  
+  /**
+   * The sprite batch that every screen uses to draw textures to the screen without needing a stage.
+   * This must be disposed of.
+   */
+  private SpriteBatch spriteBatch;
 
   /**
-   * This class is singleton, and thus its constructor is private.
+   * The game's preferences.
    */
-  private SaSGame() {
-  }
+  private GamePreferences gamePreferences;
+  
+  /**
+   * The game's input processor.
+   */
+  private InputController inputController;
 
   /**
-   * 
-   * @return instance Returns the only instance of this class.
+   * The name this object will be registered as inside the logger.
    */
-  public static synchronized SaSGame getInstance() {
-    if (instance == null) {
-      instance = new SaSGame();
-    }
-    return instance;
+  private final String logName;
+
+  /**
+   * A logger for FPS.
+   */
+  private FPSLogger fpsLogger;
+
+  /**
+   * Whether FPS should be logged.
+   */
+  private boolean logFps;
+
+  /**
+   * Default constructor for the SaSGame.
+   */
+  public SaSGame() {
+    logName = getClass().getSimpleName();
   }
 
   /**
@@ -81,58 +83,96 @@ public class SaSGame extends Game {
    */
   @Override
   public void create() {
-    Gdx.app.log(LOG_NAME, "Creating");
+    Gdx.app.log(logName, "Creating");
 
-    screensStack = new Stack<AbstractScreen>();
-    //screensStack.push(new LoadingScreen());
-    // Load the assets then transition to the first screen
-    setScreen(new LoadingScreen());
+    spriteBatch = new SpriteBatch();
+    assetManager = new AnnotationAssetManager();
+    audioHelper = new AudioHelper();
+    gamePreferences = new GamePreferences();
+    inputController = new InputController();
+    fpsLogger = new FPSLogger();
+    logFps = false;
+    
     
     // Load the game preferences
-    GamePreferences.getInstance();
+    gamePreferences.loadData();
 
-    // TODO: Load game data.
+    // Load the assets then transition to the first screen
+    setScreen(new AssetLoadingScreen());
   }
 
   @Override
   public void dispose() {
-    Gdx.app.log(LOG_NAME, "Disposing");
+    Gdx.app.log(logName, "Disposing");
+    super.dispose();
 
+    spriteBatch.dispose();
+    
     // Dispose of all of the game assets
-    AssetHelper.MANAGER.dispose();
+    assetManager.dispose();
 
     // TODO: Save game data.
-    super.dispose();
+
   }
 
   @Override
   public void render() {
     super.render();
-    if (LOG_FPS) {
-      FPS_LOGGER.log();
+
+    // log current FPS
+    if (logFps) {
+      fpsLogger.log();
+    }
+    
+    // Probably get a debug boolean and wrap this, as well as the logging
+    if (Gdx.input.isKeyPressed(Keys.R)) {
+      try {
+        setScreen(getScreen().getClass().newInstance());
+      } catch (InstantiationException | IllegalAccessException exception) {
+        exception.printStackTrace();
+      }
     }
   }
 
   @Override
   public void resize(int width, int height) {
-    Gdx.app.log(LOG_NAME, "Resizing game to: " + width + " x " + height);
+    Gdx.app.log(logName, "Resizing game to: " + width + " x " + height);
     super.resize(width, height);
-    for (AbstractScreen screen : screensStack) {
-      screen.resize(width, height);
-    }
-    GamePreferences.getInstance().saveScreenSizeData(width, height);
+
+    // save the screen size data
+    gamePreferences.saveScreenSizeData(width, height);
   }
 
   @Override
   public void resume() {
-    Gdx.app.log(LOG_NAME, "Resuming");
+    Gdx.app.log(logName, "Resuming");
     super.resume();
   }
 
   @Override
   public void setScreen(Screen screen) {
-    Gdx.app.log(LOG_NAME, "Setting screen: " + screen.getClass().getSimpleName());
+    Gdx.app.log(logName, "Setting screen: " + screen.getClass().getSimpleName());
     super.setScreen(screen);
+  }
+
+  public AudioHelper getAudioHelper() {
+    return audioHelper;
+  }
+
+  public AnnotationAssetManager getAssetManager() {
+    return assetManager;
+  }
+
+  public GamePreferences getGamePreferences() {
+    return gamePreferences;
+  }
+  
+  public InputController getInputController() {
+    return inputController;
+  }
+  
+  public SpriteBatch getSpriteBatch() {
+    return spriteBatch;
   }
 
 }

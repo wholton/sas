@@ -3,6 +3,7 @@ package com.mygdx.game.desktop;
 import com.badlogic.gdx.Files.FileType;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.mygdx.game.SaSGame;
 
 public class DesktopLauncher {
@@ -16,6 +17,7 @@ public class DesktopLauncher {
 		config.addIcon("icon/icon-128.png", FileType.Internal);
 		config.addIcon("icon/icon-32.png", FileType.Internal);
 		config.addIcon("icon/icon-16.png", FileType.Internal);
-		new LwjglApplication(SaSGame.getInstance(), config);
+		TexturePacker.processIfModified("../assets/texture/character/player", "../assets/texture/character/player", "game");
+		new LwjglApplication(new SaSGame(), config);
 	}
 }

@@ -2,13 +2,10 @@ package com.mygdx.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.mygdx.game.SaSGame;
-import com.mygdx.game.accessor.AbstractAccessor;
-import com.mygdx.game.accessor.SpriteAccessor;
-import com.mygdx.game.asset.AssetHelper;
+import com.mygdx.game.tween.AbstractAccessor;
+import com.mygdx.game.tween.SpriteAccessor;
 
 import aurelienribon.tweenengine.BaseTween;
 import aurelienribon.tweenengine.Tween;
@@ -50,7 +47,7 @@ public class SplashScreen extends AbstractScreen {
    * The description of the particular asset to be displayed as the splash texture. Will be used to
    * query the asset manager for the concrete texture.
    */
-  private final AssetDescriptor<Texture> textureDescriptor;
+  private final String texture;
 
   /**
    * Handles the splash fading effect.
@@ -58,12 +55,11 @@ public class SplashScreen extends AbstractScreen {
   private TweenManager tweenManager;
 
   public SplashScreen(final float fadeTime, final float displayTime, final Screen transition,
-      final AssetDescriptor<Texture> textureDescriptor) {
-    super();
+      final String trailerSplash1) {
     this.fadeTime = fadeTime;
     this.displayTime = displayTime;
     this.transition = transition;
-    this.textureDescriptor = textureDescriptor;
+    this.texture = trailerSplash1;
   }
 
   @Override
@@ -71,16 +67,17 @@ public class SplashScreen extends AbstractScreen {
     super.render(delta);
 
     // Draw any sprites using the sprite batch
-    batch.begin();
-    splash.draw(batch);
-    batch.end();
+    game.getSpriteBatch().begin();
+    splash.draw(game.getSpriteBatch());
+    game.getSpriteBatch().end();
 
     // Update the tween manager
     tweenManager.update(delta);
   }
 
   @Override
-  public void resize(final int width, final int height) {
+  public void resize(int width, int height) {
+    super.resize(width, height);
     splash.setSize(width, height);
   }
 
@@ -89,19 +86,18 @@ public class SplashScreen extends AbstractScreen {
     super.show();
 
     // 2 is the number of times the effect will happen.
-    Gdx.app.log(logName, "Transition in " + displayTime + 2 * fadeTime + " seconds");
+    Gdx.app.log(logName, "Transition in " + (displayTime + 2 * fadeTime) + " seconds");
 
-    splash = new Sprite(AssetHelper.MANAGER.get(textureDescriptor));
+    splash = new Sprite(game.getAssetManager().get(texture, Texture.class));
 
     // Registers the game's SpriteAccessor class to handle the Sprite
-    // tweening
-    // effects.
+    // tweening effects.
     tweenManager = new TweenManager();
     Tween.registerAccessor(Sprite.class, new SpriteAccessor());
 
     // Sets the initial alpha value of the sprite such that it is
     // transparent.
-    Tween.set(splash, AbstractAccessor.ALPHA).target(ALPHA_TRANSPARENT).start(tweenManager);
+    Tween.set(splash, AbstractAccessor.ALPHA).target(alphaTransparent).start(tweenManager);
 
     // Fades the alpha of the sprite such that it is opaque. The duration
     // must be in seconds.
@@ -111,16 +107,15 @@ public class SplashScreen extends AbstractScreen {
     TweenCallback tweenCallback = new TweenCallback() {
       @Override
       public void onEvent(int type, BaseTween<?> source) {
-        SaSGame.getInstance().setScreen(transition);
+        game.setScreen(transition);
       }
     };
 
-    Tween.to(splash, AbstractAccessor.ALPHA, fadeTime).target(ALPHA_OPAQUE)
+    Tween.to(splash, AbstractAccessor.ALPHA, fadeTime).target(alphaOpaque)
         .repeatYoyo(1, displayTime).setCallback(tweenCallback).start(tweenManager);
 
     // This is to get rid of the flicker caused by drawing with the batch
-    // then
-    // updating the tween in render.
+    // then updating the tween in render.
     tweenManager.update(Float.MIN_VALUE);
   }
 }

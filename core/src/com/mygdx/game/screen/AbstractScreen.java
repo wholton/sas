@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.game.SaSGame;
 
 /**
  * The abstract form of a screen.
@@ -19,34 +20,22 @@ public abstract class AbstractScreen implements Screen {
   protected final String logName;
 
   /**
-   * The width of the screen (from Gdx.graphics) at the time this screen was created.
+   * The alpha value corresponding to opaqueness. Default 1.
    */
-  protected static final int SCREEN_WIDTH = Gdx.graphics.getWidth();
+  protected float alphaOpaque;
 
   /**
-   * The height of the screen (from Gdx.graphics) at the time this screen was created.
+   * The alpha value corresponding to transparentness. Default 0.
    */
-  protected static final int SCREEN_HEIGHT = Gdx.graphics.getHeight();
+  protected float alphaTransparent;
 
-  /**
-   * The alpha value corresponding to opaqueness.
-   */
-  public static final float ALPHA_OPAQUE = 1;
-
-  /**
-   * The alpha value corresponding to transparentness.
-   */
-  public static final float ALPHA_TRANSPARENT = 0;
-
-  /**
-   * The sprite batch that every screen uses to draw textures to the screen without needing a stage.
-   * This must be disposed of.
-   */
-  protected SpriteBatch batch;
+  protected final SaSGame game;
 
   public AbstractScreen() {
     logName = this.getClass().getSimpleName();
-    Gdx.app.log(logName, "Constructor called");
+    alphaOpaque = 1;
+    alphaTransparent = 0;
+    game = ((SaSGame) Gdx.app.getApplicationListener());
   }
 
   /**
@@ -55,7 +44,6 @@ public abstract class AbstractScreen implements Screen {
   @Override
   public void dispose() {
     Gdx.app.log(logName, "Dispose called");
-    batch.dispose();
   }
 
   /**
@@ -104,12 +92,10 @@ public abstract class AbstractScreen implements Screen {
   }
 
   /**
-   * Called directly before the screen is to be rendered. Sets up the sprite batch to be used during
-   * the rendering phase.
+   * Called directly before the screen is to be rendered.
    */
   @Override
   public void show() {
     Gdx.app.log(logName, "Show called");
-    batch = new SpriteBatch();
   }
 }

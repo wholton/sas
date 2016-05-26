@@ -1,7 +1,15 @@
 package com.mygdx.game.screen;
 
+import aurelienribon.tweenengine.BaseTween;
+import aurelienribon.tweenengine.Timeline;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
+import aurelienribon.tweenengine.TweenManager;
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -11,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -18,17 +27,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.mygdx.game.Assets;
 import com.mygdx.game.SaSGame;
-import com.mygdx.game.accessor.AbstractAccessor;
-import com.mygdx.game.accessor.ActorAccessor;
-import com.mygdx.game.asset.AssetHelper;
-import com.mygdx.game.audio.AudioHelper;
-
-import aurelienribon.tweenengine.BaseTween;
-import aurelienribon.tweenengine.Timeline;
-import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.TweenCallback;
-import aurelienribon.tweenengine.TweenManager;
+import com.mygdx.game.tween.AbstractAccessor;
+import com.mygdx.game.tween.ActorAccessor;
 
 /**
  * Allows the user to pick between multiple screens to transition to.
@@ -110,13 +112,13 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   @Override
-  public void render(final float delta) {
+  public void render(float delta) {
     super.render(delta);
 
     // Draw any sprites using the batch
-    batch.begin();
-    background.draw(batch);
-    batch.end();
+    game.getSpriteBatch().begin();
+    background.draw(game.getSpriteBatch());
+    game.getSpriteBatch().end();
 
     // Update the stage using the delta and re-draw it
     stage.act(delta);
@@ -127,10 +129,9 @@ public class MainMenuScreen extends AbstractScreen {
   }
 
   @Override
-  public void resize(final int width, final int height) {
+  public void resize(int width, int height) {
     super.resize(width, height);
     stage.getViewport().update(width, height);
-    // Forces the table to be re-drawn
     table.invalidateHierarchy();
   }
 
@@ -139,16 +140,19 @@ public class MainMenuScreen extends AbstractScreen {
     super.show();
 
     // Setup music
-    AudioHelper.getInstance().playMusic(AssetHelper.TRACK1, true, false);
+    game.getAudioHelper().playMusic(game.getAssetManager().get(Assets.TRACK1, Music.class),
+        game.getGamePreferences().getMasterVolume() * game.getGamePreferences().getMusicVolume(),
+        true, false);
 
     // Setup background texture
-    background = new Sprite(AssetHelper.MANAGER.get(AssetHelper.MAIN_MENU_BACKGROUND1));
-    background.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+    background = new Sprite(
+        game.getAssetManager().get(Assets.MAIN_MENU_BACKGROUND1, Texture.class));
+    background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
     // Setup stage
-    final ScalingViewport scalingViewPort = new ScalingViewport(Scaling.stretch, SCREEN_WIDTH,
-        SCREEN_HEIGHT);
-    stage = new Stage(scalingViewPort, batch);
+    ScalingViewport scalingViewPort = new ScalingViewport(Scaling.stretch, Gdx.graphics.getWidth(),
+        Gdx.graphics.getHeight());
+    stage = new Stage(scalingViewPort, game.getSpriteBatch());
     Gdx.input.setInputProcessor(stage);
 
     // Setup table to align elements
@@ -157,9 +161,9 @@ public class MainMenuScreen extends AbstractScreen {
     stage.addActor(table);
 
     // Setup font
-    final FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
+    FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
         Gdx.files.internal(FONT_PATH));
-    final FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+    FreeTypeFontParameter parameter = new FreeTypeFontParameter();
     parameter.size = HEADING_FONT_SIZE;
     headingFont = generator.generateFont(parameter);
     parameter.size = BUTTON_FONT_SIZE;
@@ -168,13 +172,13 @@ public class MainMenuScreen extends AbstractScreen {
     generator.dispose();
 
     // Setup styles
-    final LabelStyle headingLabelStyle = new LabelStyle();
+    LabelStyle headingLabelStyle = new LabelStyle();
     headingLabelStyle.font = headingFont;
-    final TextButtonStyle style = new TextButtonStyle();
+    TextButtonStyle style = new TextButtonStyle();
     style.font = buttonFont;
 
     // Setup heading
-    final Label heading = new Label(SaSGame.NAME, headingLabelStyle);
+    Label heading = new Label(SaSGame.NAME, headingLabelStyle);
     table.add(heading).spaceBottom(TITLE_SPACE);
     table.row();
 
@@ -183,8 +187,14 @@ public class MainMenuScreen extends AbstractScreen {
     newGameButton.addListener(new InputListener() {
       @Override
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-        SaSGame.getInstance().setScreen(new GameScreen());
-        AudioHelper.getInstance().dispose();
+        // if wanting something more fancy, see Tween engine
+        stage.addAction(Actions.sequence(Actions.fadeOut(1), Actions.run(new Runnable() {
+          @Override
+          public void run() {
+            game.setScreen(new com.mygdx.game.workinprogress.GameScreen2()); // TODO: Change
+            game.getAudioHelper().stopMusic();
+          }
+        })));
         return true;
       }
     });
@@ -196,8 +206,8 @@ public class MainMenuScreen extends AbstractScreen {
     continueButton.addListener(new InputListener() {
       @Override
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-        SaSGame.getInstance().setScreen(new GameScreen());
-        AudioHelper.getInstance().dispose();
+        game.setScreen(new GameScreen());
+        game.getAudioHelper().stopMusic();
         return true;
       }
     });
@@ -209,7 +219,7 @@ public class MainMenuScreen extends AbstractScreen {
     optionsButton.addListener(new InputListener() {
       @Override
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-        SaSGame.getInstance().setScreen(new OptionsScreen());
+        game.setScreen(new OptionsScreen());
         return true;
       }
     });
@@ -221,8 +231,7 @@ public class MainMenuScreen extends AbstractScreen {
     exitButton.addListener(new InputListener() {
       @Override
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-        SaSGame.getInstance().setScreen(new EndScreen());
-        AudioHelper.getInstance().dispose();
+        Gdx.app.exit();
         return true;
       }
     });
@@ -249,15 +258,15 @@ public class MainMenuScreen extends AbstractScreen {
     // of the header and buttons from transparent to opaque over the fade
     // time.
     Timeline.createSequence().beginSequence()
-        .push(Tween.set(newGameButton, AbstractAccessor.ALPHA).target(ALPHA_TRANSPARENT))
-        .push(Tween.set(continueButton, AbstractAccessor.ALPHA).target(ALPHA_TRANSPARENT))
-        .push(Tween.set(optionsButton, AbstractAccessor.ALPHA).target(ALPHA_TRANSPARENT))
-        .push(Tween.set(exitButton, AbstractAccessor.ALPHA).target(ALPHA_TRANSPARENT))
-        .push(Tween.from(heading, AbstractAccessor.ALPHA, FADE_TIME).target(ALPHA_TRANSPARENT))
-        .push(Tween.to(newGameButton, AbstractAccessor.ALPHA, FADE_TIME).target(ALPHA_OPAQUE))
-        .push(Tween.to(continueButton, AbstractAccessor.ALPHA, FADE_TIME).target(ALPHA_OPAQUE))
-        .push(Tween.to(optionsButton, AbstractAccessor.ALPHA, FADE_TIME).target(ALPHA_OPAQUE))
-        .push(Tween.to(exitButton, AbstractAccessor.ALPHA, FADE_TIME).target(ALPHA_OPAQUE)).end()
+        .push(Tween.set(newGameButton, AbstractAccessor.ALPHA).target(alphaTransparent))
+        .push(Tween.set(continueButton, AbstractAccessor.ALPHA).target(alphaTransparent))
+        .push(Tween.set(optionsButton, AbstractAccessor.ALPHA).target(alphaTransparent))
+        .push(Tween.set(exitButton, AbstractAccessor.ALPHA).target(alphaTransparent))
+        .push(Tween.from(heading, AbstractAccessor.ALPHA, FADE_TIME).target(alphaTransparent))
+        .push(Tween.to(newGameButton, AbstractAccessor.ALPHA, FADE_TIME).target(alphaOpaque))
+        .push(Tween.to(continueButton, AbstractAccessor.ALPHA, FADE_TIME).target(alphaOpaque))
+        .push(Tween.to(optionsButton, AbstractAccessor.ALPHA, FADE_TIME).target(alphaOpaque))
+        .push(Tween.to(exitButton, AbstractAccessor.ALPHA, FADE_TIME).target(alphaOpaque)).end()
         .setCallback(enableButtons).start(tweenManager);
 
     // This is to get rid of the flicker caused by drawing with the batch

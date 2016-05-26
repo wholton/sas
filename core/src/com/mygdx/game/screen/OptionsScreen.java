@@ -2,6 +2,7 @@ package com.mygdx.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -21,9 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.mygdx.game.SaSGame;
-import com.mygdx.game.asset.AssetHelper;
-import com.mygdx.game.data.GamePreferences;
+import com.mygdx.game.Assets;
 
 /**
  * Allows the player to set options pertaining to the game's video, audio, and play.
@@ -107,9 +106,9 @@ public class OptionsScreen extends AbstractScreen {
   public void render(float delta) {
     super.render(delta);
 
-    batch.begin();
-    background.draw(batch);
-    batch.end();
+    game.getSpriteBatch().begin();
+    background.draw(game.getSpriteBatch());
+    game.getSpriteBatch().end();
 
     stage.act(delta);
     stage.draw();
@@ -127,13 +126,13 @@ public class OptionsScreen extends AbstractScreen {
     super.show();
 
     // Setup stage
-    final ScalingViewport scalingViewPort = new ScalingViewport(Scaling.stretch, SCREEN_WIDTH,
-        SCREEN_HEIGHT);
-    stage = new Stage(scalingViewPort, batch);
+    final ScalingViewport scalingViewPort = new ScalingViewport(Scaling.stretch, 
+        Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    stage = new Stage(scalingViewPort, game.getSpriteBatch());
     Gdx.input.setInputProcessor(stage);
 
     // Setup background sprite
-    background = new Sprite(AssetHelper.MANAGER.get(AssetHelper.OPTIONS_BACKGROUND1));
+    background = new Sprite(game.getAssetManager().get(Assets.OPTIONS_BACKGROUND1, Texture.class));
 
     // Setup table to align items
     table = new Table();
@@ -141,7 +140,7 @@ public class OptionsScreen extends AbstractScreen {
     stage.addActor(table);
 
     // Setup skin
-    final Skin widgetSkin = AssetHelper.MANAGER.get(AssetHelper.WIDGET_SKIN);
+    final Skin widgetSkin = game.getAssetManager().get(Assets.WIDGET_SKIN, Skin.class);
 
     // Setup fonts
     final FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
@@ -168,20 +167,17 @@ public class OptionsScreen extends AbstractScreen {
     table.add(new Label("Options", headingLabelStyle)).spaceBottom(TITLE_SPACE).colspan(2);
     table.row();
 
-    // Setup game preferences that the sliders + checkboxes will be editing
-    final GamePreferences gamePreferences = GamePreferences.getInstance();
-
     // Setup master volume option
     table.add(new Label("Master Volume", optionLabelStyle)).spaceBottom(OPTION_SPACE)
         .spaceRight(OPTION_SPACE);
     final Slider masterVolumeSlider = new Slider(0, 1, .01f, false, widgetSkin);
-    masterVolumeSlider.setValue(gamePreferences.getMasterVolume());
+    masterVolumeSlider.setValue(game.getGamePreferences().getMasterVolume());
     masterVolumeSlider.addListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
-        gamePreferences.setMasterVolume(masterVolumeSlider.getValue());
-        gamePreferences.updateMusic();
-        gamePreferences.updateSound();
+        game.getGamePreferences().setMasterVolume(masterVolumeSlider.getValue());
+        game.getGamePreferences().updateMusic();
+        game.getGamePreferences().updateSound();
       }
     });
     table.add(masterVolumeSlider).spaceBottom(OPTION_SPACE);
@@ -191,12 +187,12 @@ public class OptionsScreen extends AbstractScreen {
     table.add(new Label("Sound Effect Volume", optionLabelStyle)).spaceBottom(OPTION_SPACE)
         .spaceRight(OPTION_SPACE);
     final Slider soundVolumeSlider = new Slider(0, 1, .01f, false, widgetSkin);
-    soundVolumeSlider.setValue(gamePreferences.getSoundVolume());
+    soundVolumeSlider.setValue(game.getGamePreferences().getSoundVolume());
     soundVolumeSlider.addListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
-        gamePreferences.setSoundVolume(soundVolumeSlider.getValue());
-        gamePreferences.updateSound();
+        game.getGamePreferences().setSoundVolume(soundVolumeSlider.getValue());
+        game.getGamePreferences().updateSound();
       }
     });
     table.add(soundVolumeSlider).spaceBottom(OPTION_SPACE);
@@ -206,12 +202,12 @@ public class OptionsScreen extends AbstractScreen {
     table.add(new Label("Music Volume", optionLabelStyle)).spaceBottom(OPTION_SPACE)
         .spaceRight(OPTION_SPACE);
     final Slider musicVolumeSlider = new Slider(0, 1, .01f, false, widgetSkin);
-    musicVolumeSlider.setValue(gamePreferences.getMusicVolume());
+    musicVolumeSlider.setValue(game.getGamePreferences().getMusicVolume());
     musicVolumeSlider.addListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
-        gamePreferences.setMusicVolume(musicVolumeSlider.getValue());
-        gamePreferences.updateMusic();
+        game.getGamePreferences().setMusicVolume(musicVolumeSlider.getValue());
+        game.getGamePreferences().updateMusic();
       }
     });
     table.add(musicVolumeSlider).spaceBottom(OPTION_SPACE);
@@ -221,12 +217,12 @@ public class OptionsScreen extends AbstractScreen {
     table.add(new Label("Fullscreen", optionLabelStyle)).spaceBottom(OPTION_SPACE)
         .spaceRight(OPTION_SPACE);
     final CheckBox fullscreenCheckBox = new CheckBox("", widgetSkin);
-    fullscreenCheckBox.setChecked(gamePreferences.isFullscreen());
+    fullscreenCheckBox.setChecked(game.getGamePreferences().isFullscreen());
     fullscreenCheckBox.addListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
-        gamePreferences.setFullscreen(fullscreenCheckBox.isChecked());
-        gamePreferences.updateFullscreen();
+        game.getGamePreferences().setFullscreen(fullscreenCheckBox.isChecked());
+        game.getGamePreferences().updateFullscreen();
       }
     });
     table.add(fullscreenCheckBox).spaceBottom(OPTION_SPACE);
@@ -236,12 +232,12 @@ public class OptionsScreen extends AbstractScreen {
     table.add(new Label("VSync", optionLabelStyle)).spaceBottom(OPTION_SPACE)
         .spaceRight(OPTION_SPACE);
     final CheckBox vsyncCheckBox = new CheckBox("", widgetSkin);
-    vsyncCheckBox.setChecked(gamePreferences.isVSync());
+    vsyncCheckBox.setChecked(game.getGamePreferences().isVSync());
     vsyncCheckBox.addListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
-        gamePreferences.setVSync(vsyncCheckBox.isChecked());
-        gamePreferences.updateVsync();
+        game.getGamePreferences().setVSync(vsyncCheckBox.isChecked());
+        game.getGamePreferences().updateVsync();
       }
     });
     table.add(vsyncCheckBox).spaceBottom(OPTION_SPACE);
@@ -251,11 +247,11 @@ public class OptionsScreen extends AbstractScreen {
     table.add(new Label("Skip Intro", optionLabelStyle)).spaceBottom(TITLE_SPACE)
         .spaceRight(OPTION_SPACE);
     final CheckBox introCheckBox = new CheckBox("", widgetSkin);
-    introCheckBox.setChecked(gamePreferences.isSkipIntro());
+    introCheckBox.setChecked(game.getGamePreferences().isSkipIntro());
     introCheckBox.addListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
-        gamePreferences.setSkipIntro(introCheckBox.isChecked());
+        game.getGamePreferences().setSkipIntro(introCheckBox.isChecked());
       }
     });
     table.add(introCheckBox).spaceBottom(TITLE_SPACE);
@@ -266,8 +262,8 @@ public class OptionsScreen extends AbstractScreen {
     submitButton.addListener(new InputListener() {
       @Override
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-        gamePreferences.saveData();
-        SaSGame.getInstance().setScreen(new MainMenuScreen());
+        game.getGamePreferences().saveData();
+        game.setScreen(new MainMenuScreen());
         return true;
       }
     });
@@ -278,8 +274,8 @@ public class OptionsScreen extends AbstractScreen {
     cancelButton.addListener(new InputListener() {
       @Override
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-        gamePreferences.loadData();
-        SaSGame.getInstance().setScreen(new MainMenuScreen());
+        game.getGamePreferences().loadData();
+        game.setScreen(new MainMenuScreen());
         return true;
       }
     });
