@@ -146,7 +146,6 @@ public class GameScreen extends AbstractScreen {
   public void dispose() {
     map.dispose();
     renderer.dispose();
-    playerAtlas.dispose();
     super.dispose();
   }
 
