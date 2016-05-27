@@ -31,6 +31,6 @@ public abstract class Assets {
   public static final String WIDGET_SKIN = "skin/uiskin.json";
 
   @Asset(TextureAtlas.class)
-  public static final String ATLAS = "texture/character/player4/game.atlas";
+  public static final String ATLAS = "texture/character/player/game.atlas";
 
 }

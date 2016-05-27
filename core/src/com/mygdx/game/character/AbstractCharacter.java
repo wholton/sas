@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.IntSet;
 
 import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
 
-public class AbstractCharacter extends Sprite {
+public abstract class AbstractCharacter extends Sprite {
   
   /** The name this object will be registered as inside the logger. */
   protected final String logName;
@@ -38,23 +38,20 @@ public class AbstractCharacter extends Sprite {
   protected EightWayDirection facing;
 
   /** A container for the character's movement animations. */
-  EightWayMovementAnimation movementAnimation;
+  protected EightWayMovementAnimation movementAnimation;
   
   /** The width of the character will be scaled by this value. */
-  private float widthScale;
-  private static final float DEFAULT_WIDTH_SCALE = .5f;
+  protected float widthScale;
+  protected static final float DEFAULT_WIDTH_SCALE = .5f;
   
   /** The height of the character will be scaled by this value. */
-  private float heightScale;
-  private static final float DEFAULT_HEIGHT_SCALE = .5f;
+  protected float heightScale;
+  protected static final float DEFAULT_HEIGHT_SCALE = .5f;
   
   /** Layer for player to check collision against. */
-  private TiledMapTileLayer collisionLayer; //TODO: need to be here?
+  protected TiledMapTileLayer collisionLayer; //TODO: need to be here?
 
-  public static final String COLLISION_PROPERTY_KEY = "collision"; // TODO: move these to enums
-  
-  /** A set containing which keys are currently down. */
-  protected final IntSet keysDown;
+  protected static final String COLLISION_PROPERTY_KEY = "collision"; // TODO: move these to enums
  
   /**
    * An abstract character class.
@@ -67,7 +64,6 @@ public class AbstractCharacter extends Sprite {
     Gdx.app.log(logName, "Constructor called");
     widthScale = DEFAULT_WIDTH_SCALE;
     heightScale = DEFAULT_HEIGHT_SCALE;
-    keysDown = new IntSet();
     velocity = new Vector2();
     speed = 40;
     autoUpdate = true;
@@ -222,95 +218,6 @@ public class AbstractCharacter extends Sprite {
 
   public void setCollisionLayer(TiledMapTileLayer collisionLayer) {
     this.collisionLayer = collisionLayer;
-  }
-
-  /**
-   * Applies Key Down events to the user.
-   * @param keycode the keycode of the key which was pressed
-   * @return  whether the input was processed
-   */
-  public boolean keyDown(int keycode) {
-    Gdx.app.log(logName, "Key down: " + Keys.toString(keycode));
-    keysDown.add(keycode);
-    boolean handled = false;
-    switch (keycode) {
-      case Keys.W:
-        velocity.y = speed;
-        animationTime = 0;
-        handled = true;
-        break;
-      case Keys.S:
-        velocity.y = -speed;
-        animationTime = 0;
-        handled = true;
-        break;
-      case Keys.A:
-        velocity.x = -speed;
-        animationTime = 0;
-        handled = true;
-        break;
-      case Keys.D:
-        velocity.x = speed;
-        animationTime = 0;
-        handled = true;
-        break;
-      default:
-    }
-    // If two opposite movement keys are down, they cancel.
-    if (keysDown.size > 1) {
-      if (keysDown.contains(Keys.A) && keysDown.contains(Keys.D)) {
-        velocity.x = 0;
-        animationTime = 0; // TODO make sure WS works... r weird results
-      }
-      if (keysDown.contains(Keys.W) && keysDown.contains(Keys.S)) {
-        velocity.y = 0;
-        animationTime = 0;
-      }
-    }
-    return handled;
-  }
-
-  /**
-   * Applies Key Up events to the user.
-   * @param keycode the keycode of the key which was pressed
-   * @return  whether the input was processed
-   */
-  public boolean keyUp(int keycode) {
-    Gdx.app.log(logName, "Key up: " + Keys.toString(keycode));
-    keysDown.remove(keycode);
-    boolean handled = false;
-    switch (keycode) {
-      case Keys.A:
-      case Keys.D:
-        velocity.x = 0;
-        animationTime = 0;
-        handled = true;
-        break;
-      case Keys.W:
-      case Keys.S:
-        velocity.y = 0;
-        animationTime = 0;
-        handled = true;
-        break;
-      default:
-    }
-    // If two opposite movement keys are down, they cancel. This undoes that when one comes up.
-    if (keysDown.size > 0) {
-      if (keycode == Keys.S && keysDown.contains(Keys.W)) {
-        velocity.y = speed;
-        animationTime = 0;
-      } else if (keycode == Keys.W && keysDown.contains(Keys.S)) {
-        velocity.y = -speed;
-        animationTime = 0;
-      } else if (keycode == Keys.A && keysDown.contains(Keys.D)) {
-        velocity.x = speed;
-        animationTime = 0;
-      } else if (keycode == Keys.D && keysDown.contains(Keys.A)) {
-        velocity.x = -speed;
-        animationTime = 0;
-      }
-    }
-    return handled;
   }
 
 }

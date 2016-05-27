@@ -2,8 +2,12 @@ package com.mygdx.game.workinprogress;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -122,7 +126,7 @@ public class GameScreen extends AbstractScreen {
     
     groundShape.dispose();
     
-    Gdx.input.setInputProcessor(new InputController() {
+    Gdx.input.setInputProcessor(new InputProcessor() {
       @Override
       public boolean keyDown(int keycode) {
         Gdx.app.log(logName, "Key down: " + Keys.toString(keycode));
@@ -171,6 +175,36 @@ public class GameScreen extends AbstractScreen {
         camera.zoom += amount / ZOOM;
         return true;
       }
+
+      @Override
+      public boolean keyTyped(char character) {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public boolean touchDragged(int screenX, int screenY, int pointer) {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public boolean mouseMoved(int screenX, int screenY) {
+        // TODO Auto-generated method stub
+        return false;
+      }
     });
   }
 
@@ -179,6 +213,108 @@ public class GameScreen extends AbstractScreen {
     world.dispose();
     debugRenderer.dispose();
     super.dispose();
+  }
+
+  @Override
+  public boolean keyDown(int keycode) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean keyUp(int keycode) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean keyTyped(char character) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean touchDragged(int screenX, int screenY, int pointer) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean mouseMoved(int screenX, int screenY) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean scrolled(int amount) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public void connected(Controller controller) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void disconnected(Controller controller) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public boolean buttonDown(Controller controller, int buttonCode) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean buttonUp(Controller controller, int buttonCode) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean axisMoved(Controller controller, int axisCode, float value) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean povMoved(Controller controller, int povCode, PovDirection value) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean xSliderMoved(Controller controller, int sliderCode, boolean value) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean ySliderMoved(Controller controller, int sliderCode, boolean value) {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value) {
+    // TODO Auto-generated method stub
+    return false;
   }
 
 }

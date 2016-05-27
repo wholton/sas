@@ -7,7 +7,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.screen.AssetLoadingScreen;
-import com.mygdx.game.workinprogress.InputController;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -49,11 +48,6 @@ public class SaSGame extends Game {
    * The game's preferences.
    */
   private GamePreferences gamePreferences;
-  
-  /**
-   * The game's input processor.
-   */
-  private InputController inputController;
 
   /**
    * The name this object will be registered as inside the logger.
@@ -89,7 +83,6 @@ public class SaSGame extends Game {
     assetManager = new AnnotationAssetManager();
     audioHelper = new AudioHelper();
     gamePreferences = new GamePreferences();
-    inputController = new InputController();
     fpsLogger = new FPSLogger();
     logFps = false;
     
@@ -165,10 +158,6 @@ public class SaSGame extends Game {
 
   public GamePreferences getGamePreferences() {
     return gamePreferences;
-  }
-  
-  public InputController getInputController() {
-    return inputController;
   }
   
   public SpriteBatch getSpriteBatch() {
