@@ -1,10 +1,8 @@
 package com.mygdx.game.screen;
 
 import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.PovDirection;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.mygdx.game.Assets;
+import com.mygdx.game.util.Assets;
 
 public class AssetLoadingScreen extends AbstractScreen {
 
@@ -35,8 +33,8 @@ public class AssetLoadingScreen extends AbstractScreen {
       game.setScreen(new MainMenuScreen());
     } else {
       final SplashScreen trailer = new SplashScreen(2, 2, new MainMenuScreen(),
-          Assets.TRAILER_SPLASH1);
-      final SplashScreen company = new SplashScreen(2, 2, trailer, Assets.COMPANY_SPLASH1);
+          Assets.TRAILER_SPLASH);
+      final SplashScreen company = new SplashScreen(2, 2, trailer, Assets.COMPANY_SPLASH);
       game.setScreen(company);
     }
   }

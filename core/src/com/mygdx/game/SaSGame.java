@@ -4,9 +4,11 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.mygdx.game.saveddata.GamePreferences;
 import com.mygdx.game.screen.AssetLoadingScreen;
+import com.mygdx.game.util.AudioHelper;
+import com.mygdx.game.util.FPSLogger;
 
 import net.dermetfan.gdx.assets.AnnotationAssetManager;
 
@@ -63,6 +65,9 @@ public class SaSGame extends Game {
    * Whether FPS should be logged.
    */
   private boolean logFps;
+  
+  /** FPS logging threshold. Will only log FPS below this. */
+  private static final int FPS_LOG_THRESHOLD = 50;
 
   /**
    * Default constructor for the SaSGame.
@@ -83,8 +88,8 @@ public class SaSGame extends Game {
     assetManager = new AnnotationAssetManager();
     audioHelper = new AudioHelper();
     gamePreferences = new GamePreferences();
-    fpsLogger = new FPSLogger();
-    logFps = false;
+    fpsLogger = new FPSLogger(FPS_LOG_THRESHOLD);
+    logFps = true;
     
     
     // Load the game preferences
@@ -114,7 +119,7 @@ public class SaSGame extends Game {
 
     // log current FPS
     if (logFps) {
-      fpsLogger.log();
+      fpsLogger.logBelowThreshold();
     }
     
     // Probably get a debug boolean and wrap this, as well as the logging

@@ -2,14 +2,12 @@ package com.mygdx.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -25,7 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.mygdx.game.Assets;
+import com.mygdx.game.util.Assets;
 
 /**
  * Allows the player to set options pertaining to the game's video, audio, and play.
@@ -135,7 +133,7 @@ public class OptionsScreen extends AbstractScreen {
     Gdx.input.setInputProcessor(stage);
 
     // Setup background sprite
-    background = new Sprite(game.getAssetManager().get(Assets.OPTIONS_BACKGROUND1, Texture.class));
+    background = new Sprite(game.getAssetManager().get(Assets.OPTIONS_BACKGROUND, Texture.class));
 
     // Setup table to align items
     table = new Table();

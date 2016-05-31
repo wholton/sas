@@ -1,28 +1,19 @@
 package com.mygdx.game.screen;
 
-import aurelienribon.tweenengine.BaseTween;
-import aurelienribon.tweenengine.Timeline;
-import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.TweenCallback;
-import aurelienribon.tweenengine.TweenManager;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -30,10 +21,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.mygdx.game.Assets;
 import com.mygdx.game.SaSGame;
-import com.mygdx.game.tween.AbstractAccessor;
 import com.mygdx.game.tween.ActorAccessor;
+import com.mygdx.game.tween.MusicAccessor;
+import com.mygdx.game.tween.SpriteAccessor;
+import com.mygdx.game.util.Assets;
+
+import aurelienribon.tweenengine.BaseTween;
+import aurelienribon.tweenengine.Timeline;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
+import aurelienribon.tweenengine.TweenManager;
 
 /**
  * Allows the user to pick between multiple screens to transition to.
@@ -143,13 +141,12 @@ public class MainMenuScreen extends AbstractScreen {
     super.show();
 
     // Setup music
-    game.getAudioHelper().playMusic(game.getAssetManager().get(Assets.TRACK1, Music.class),
-        game.getGamePreferences().getMasterVolume() * game.getGamePreferences().getMusicVolume(),
-        true, false);
+    game.getAudioHelper().playMusic(game.getAssetManager().get(Assets.MAIN_MENU_MUSIC, Music.class),
+        game.getGamePreferences().getAdjustedMusicVolume(), true, false);
 
     // Setup background texture
     background = new Sprite(
-        game.getAssetManager().get(Assets.MAIN_MENU_BACKGROUND1, Texture.class));
+        game.getAssetManager().get(Assets.MAIN_MENU_BACKGROUND, Texture.class));
     background.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
     // Setup stage
@@ -190,14 +187,31 @@ public class MainMenuScreen extends AbstractScreen {
     newGameButton.addListener(new InputListener() {
       @Override
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-        // if wanting something more fancy, see Tween engine
-        stage.addAction(Actions.sequence(Actions.fadeOut(1), Actions.run(new Runnable() {
+        // Use tween engine to fade out music and screen
+        Tween.registerAccessor(Music.class, new MusicAccessor());
+        Tween.registerAccessor(Sprite.class, new SpriteAccessor());
+
+        // Disable all buttons.
+        table.setTouchable(Touchable.disabled);
+
+        TweenCallback nextScreen = new TweenCallback() {
           @Override
-          public void run() {
-            game.setScreen(new com.mygdx.game.screen.GameScreen()); // TODO: Change
+          public void onEvent(int type, BaseTween<?> source) {
             game.getAudioHelper().stopMusic();
+            game.setScreen(new GameScreen());
           }
-        })));
+        };
+
+        Timeline fadeoutTimeline = Timeline.createSequence().beginParallel();
+          for (Actor actor : stage.getActors()) {
+            fadeoutTimeline.push(Tween.to(actor, ActorAccessor.ALPHA, FADE_TIME)
+                .target(alphaTransparent));
+          }
+          fadeoutTimeline.push(Tween.to(background, SpriteAccessor.ALPHA, FADE_TIME)
+              .target(alphaTransparent))
+            .push(Tween.to(game.getAudioHelper().getMusic(), MusicAccessor.VOLUME, FADE_TIME)
+                .cast(Music.class))
+            .end().setCallback(nextScreen).start(tweenManager);
         return true;
       }
     });
@@ -209,8 +223,31 @@ public class MainMenuScreen extends AbstractScreen {
     continueButton.addListener(new InputListener() {
       @Override
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-        game.setScreen(new GameScreen());
-        game.getAudioHelper().stopMusic();
+        // Use tween engine to fade out music and screen
+        Tween.registerAccessor(Music.class, new MusicAccessor());
+        Tween.registerAccessor(Sprite.class, new SpriteAccessor());
+
+        // Disable all buttons.
+        table.setTouchable(Touchable.disabled);
+
+        TweenCallback nextScreen = new TweenCallback() {
+          @Override
+          public void onEvent(int type, BaseTween<?> source) {
+            game.getAudioHelper().stopMusic();
+            game.setScreen(new GameScreen());
+          }
+        };
+
+        Timeline fadeoutTimeline = Timeline.createSequence().beginParallel();
+          for (Actor actor : stage.getActors()) {
+            fadeoutTimeline.push(Tween.to(actor, ActorAccessor.ALPHA, FADE_TIME)
+                .target(alphaTransparent));
+          }
+          fadeoutTimeline.push(Tween.to(background, SpriteAccessor.ALPHA, FADE_TIME)
+              .target(alphaTransparent))
+            .push(Tween.to(game.getAudioHelper().getMusic(), MusicAccessor.VOLUME, FADE_TIME)
+                .cast(Music.class))
+            .end().setCallback(nextScreen).start(tweenManager);
         return true;
       }
     });
@@ -260,17 +297,19 @@ public class MainMenuScreen extends AbstractScreen {
     // tween effect that changes the alpha
     // of the header and buttons from transparent to opaque over the fade
     // time.
+    Timeline.createSequence().beginParallel()
+      .push(Tween.set(newGameButton, ActorAccessor.ALPHA).target(alphaTransparent))
+      .push(Tween.set(continueButton, ActorAccessor.ALPHA).target(alphaTransparent))
+      .push(Tween.set(optionsButton, ActorAccessor.ALPHA).target(alphaTransparent))
+      .push(Tween.set(exitButton, ActorAccessor.ALPHA).target(alphaTransparent))
+      .end().start(tweenManager);
     Timeline.createSequence().beginSequence()
-        .push(Tween.set(newGameButton, AbstractAccessor.ALPHA).target(alphaTransparent))
-        .push(Tween.set(continueButton, AbstractAccessor.ALPHA).target(alphaTransparent))
-        .push(Tween.set(optionsButton, AbstractAccessor.ALPHA).target(alphaTransparent))
-        .push(Tween.set(exitButton, AbstractAccessor.ALPHA).target(alphaTransparent))
-        .push(Tween.from(heading, AbstractAccessor.ALPHA, FADE_TIME).target(alphaTransparent))
-        .push(Tween.to(newGameButton, AbstractAccessor.ALPHA, FADE_TIME).target(alphaOpaque))
-        .push(Tween.to(continueButton, AbstractAccessor.ALPHA, FADE_TIME).target(alphaOpaque))
-        .push(Tween.to(optionsButton, AbstractAccessor.ALPHA, FADE_TIME).target(alphaOpaque))
-        .push(Tween.to(exitButton, AbstractAccessor.ALPHA, FADE_TIME).target(alphaOpaque)).end()
-        .setCallback(enableButtons).start(tweenManager);
+    .delay(1)
+    .push(Tween.to(newGameButton, ActorAccessor.ALPHA, FADE_TIME).target(alphaOpaque))
+    .push(Tween.to(continueButton, ActorAccessor.ALPHA, FADE_TIME).target(alphaOpaque))
+    .push(Tween.to(optionsButton, ActorAccessor.ALPHA, FADE_TIME).target(alphaOpaque))
+    .push(Tween.to(exitButton, ActorAccessor.ALPHA, FADE_TIME).target(alphaOpaque))
+    .end().setCallback(enableButtons).start(tweenManager);
 
     // This is to get rid of the flicker caused by drawing with the batch
     // then

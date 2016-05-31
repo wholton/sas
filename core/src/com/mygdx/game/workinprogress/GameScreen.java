@@ -17,7 +17,6 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.mygdx.game.SaSGame;
 import com.mygdx.game.screen.AbstractScreen;
 import com.mygdx.game.screen.MainMenuScreen;
 

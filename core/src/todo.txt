@@ -1,7 +1,7 @@
 We may also want to move the styles, font, etc. into a JSON.
 
-under desktop launcher, save width/height after resize and load there
-
-set log names to class name
-
-instead of calling "new ... screen", use enums
+- Other characters
+- Save / Load game
+- Pause Screen
+- Fade out distant sound effects over distance
+- Remap keys

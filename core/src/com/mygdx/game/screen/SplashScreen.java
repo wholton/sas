@@ -3,11 +3,8 @@ package com.mygdx.game.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.Vector3;
-import com.mygdx.game.tween.AbstractAccessor;
 import com.mygdx.game.tween.SpriteAccessor;
 
 import aurelienribon.tweenengine.BaseTween;
@@ -100,7 +97,7 @@ public class SplashScreen extends AbstractScreen {
 
     // Sets the initial alpha value of the sprite such that it is
     // transparent.
-    Tween.set(splash, AbstractAccessor.ALPHA).target(alphaTransparent).start(tweenManager);
+    Tween.set(splash, SpriteAccessor.ALPHA).target(alphaTransparent).start(tweenManager);
 
     // Fades the alpha of the sprite such that it is opaque. The duration
     // must be in seconds.
@@ -114,7 +111,7 @@ public class SplashScreen extends AbstractScreen {
       }
     };
 
-    Tween.to(splash, AbstractAccessor.ALPHA, fadeTime).target(alphaOpaque)
+    Tween.to(splash, SpriteAccessor.ALPHA, fadeTime).target(alphaOpaque)
         .repeatYoyo(1, displayTime).setCallback(tweenCallback).start(tweenManager);
 
     // This is to get rid of the flicker caused by drawing with the batch

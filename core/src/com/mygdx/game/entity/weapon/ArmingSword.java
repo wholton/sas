@@ -1,6 +1,6 @@
 package com.mygdx.game.entity.weapon;
 
-import com.mygdx.game.entity.characters.proficiencies.util.ProficiencyType;
+import com.mygdx.game.entity.character.proficiencies.ProficiencyType;
 
 public final class ArmingSword extends AbstractMeleeWeapon {
 

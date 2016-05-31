@@ -14,19 +14,4 @@ public abstract class AbstractAccessor {
    */
   public static final String ERROR_MESSAGE_TWEEN_TYPE = "Unknown tweenType.";
 
-  /**
-   * Represents an enumeration of the tween type corresponding to the alpha value.
-   */
-  public static final int ALPHA = 0;
-
-  /**
-   * Represents an enumeration of the tween type corresponding to the red, green, and blue values.
-   */
-  public static final int RGB = 1;
-
-  /**
-   * Represents an enumeration of the tween type corresponding to the Y value.
-   */
-  public static final int Y = 2;
-
 }

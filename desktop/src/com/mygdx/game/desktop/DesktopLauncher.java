@@ -17,7 +17,8 @@ public class DesktopLauncher {
 		config.addIcon("icon/icon-128.png", FileType.Internal);
 		config.addIcon("icon/icon-32.png", FileType.Internal);
 		config.addIcon("icon/icon-16.png", FileType.Internal);
-		TexturePacker.processIfModified("../assets/texture/character/player", "../assets/texture/character/player", "game");
+		TexturePacker.processIfModified("../assets/texture/character/player", "../assets/texture/character/player", "player");
+		TexturePacker.processIfModified("../assets/texture/character/ogre", "../assets/texture/character/ogre", "ogre");
 		new LwjglApplication(new SaSGame(), config);
 	}
 }
