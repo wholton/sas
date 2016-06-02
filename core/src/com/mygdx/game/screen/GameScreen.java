@@ -1,5 +1,10 @@
 package com.mygdx.game.screen;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Music;
@@ -12,7 +17,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-
 import com.mygdx.game.joystiq.XBox360ControllerCode;
 import com.mygdx.game.sprite.AbstractCharacterSprite;
 import com.mygdx.game.sprite.NonplayerCharacterSprite;
@@ -21,11 +25,6 @@ import com.mygdx.game.sprite.movement.EightWayMovementAnimation;
 import com.mygdx.game.util.Assets;
 import com.mygdx.game.util.SoundEffect;
 import com.mygdx.game.util.TextureAtlasHelper;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 public class GameScreen extends AbstractScreen {
 

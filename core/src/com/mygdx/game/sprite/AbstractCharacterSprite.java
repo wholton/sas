@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.entity.character.AbstractCharacter;
 import com.mygdx.game.sprite.movement.EightWayDirection;
 import com.mygdx.game.sprite.movement.EightWayMovementAnimation;
 import com.mygdx.game.util.SoundEffect;
@@ -18,6 +19,9 @@ public abstract class AbstractCharacterSprite extends Sprite {
   
   /** The name this object will be registered as inside the logger. */
   protected final String logName;
+  
+  /** The character entity associated with the sprite. */
+  protected AbstractCharacter character;
 
   /** the movement velocity. */
   protected final Vector2 velocity;
@@ -57,7 +61,7 @@ public abstract class AbstractCharacterSprite extends Sprite {
   
   /** The sprites the character can collide with. Includes itself. */
   protected List<AbstractCharacterSprite> characters;
- 
+  
   /**
    * An abstract character class.
    * @param movementAnimation animations representing the character's eight movement options
@@ -143,7 +147,7 @@ public abstract class AbstractCharacterSprite extends Sprite {
     if (collisionY) {
       setY(oldY);
       velocity.y = 0;
-    }
+    } // TODO: move as close as possible
     
     // Update which direction the character is facing
     if (isWalking()) {
@@ -192,21 +196,19 @@ public abstract class AbstractCharacterSprite extends Sprite {
     int tilePositionX = (int) (characterPositionX / backgroundLayer.getTileWidth());
     int tilePositionY = (int) (characterPositionY / backgroundLayer.getTileHeight());
     Cell cell = backgroundLayer.getCell(tilePositionX, tilePositionY);
-    boolean hasCollisionKey = cell != null && cell.getTile() != null 
-        && cell.getTile().getProperties().containsKey(COLLISION_PROPERTY_KEY);
-    
+    if (cell != null && cell.getTile() != null 
+        && cell.getTile().getProperties().containsKey(COLLISION_PROPERTY_KEY)) {
+      return true;
+    }
+
     // Check the cell for another character
-    boolean isOccupied = false;
     for (AbstractCharacterSprite character : characters) {
-      if (character != this && characterPositionX > character.getX() 
-          && characterPositionX < character.getX() + character.getWidth()
-          && characterPositionY > character.getY() 
-          && characterPositionY < character.getY() + character.getHeight()) {
-        isOccupied = true;
-        break;
+      if (character != this && character.containsPoint(characterPositionX, characterPositionY)) {
+        return true;
       }
     }
-    return hasCollisionKey || isOccupied;
+    
+    return false;
   }
   
   protected boolean collidesRight(float increment) {
@@ -243,6 +245,22 @@ public abstract class AbstractCharacterSprite extends Sprite {
       }
     }
     return false;
+  }
+  
+  public boolean containsPoint(float x, float y) {
+    return containsPointX(x) && containsPointY(y);
+  }
+  
+  public boolean containsPoint(Vector2 point) {
+    return containsPointX(point.x) && containsPointY(point.y);
+  }
+  
+  protected boolean containsPointX(float x) {
+    return x > getX() && x < getX() + getWidth();
+  }
+  
+  protected boolean containsPointY(float y) {
+    return y > getY() && y < getY() + getHeight();
   }
 
   public Vector2 getVelocity() {

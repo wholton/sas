@@ -8,7 +8,6 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.IntSet;
-import com.mygdx.game.entity.character.AbstractCharacter;
 import com.mygdx.game.joystiq.XBox360ControllerCode;
 import com.mygdx.game.sprite.movement.EightWayMovementAnimation;
 import com.mygdx.game.util.SoundEffect;
