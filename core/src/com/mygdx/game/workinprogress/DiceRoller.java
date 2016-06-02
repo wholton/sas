@@ -20,14 +20,12 @@ public class DiceRoller {
     }
   }
   
-  private Random random;
+  private static final Random RANDOM = new Random(System.currentTimeMillis());
   
-  public DiceRoller() {
-    random = new Random(System.nanoTime());
-  }
+  public DiceRoller() {}
 
   public int roll(DieSize dieSize) {
-    return random.nextInt(dieSize.getValue()) + 1;
+    return RANDOM.nextInt(dieSize.getValue()) + 1;
   }
 
   public List<Integer> roll(DieSize dieSize, int numberOfRolls) {

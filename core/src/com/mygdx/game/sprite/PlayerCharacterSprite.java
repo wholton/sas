@@ -8,6 +8,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.utils.IntSet;
+import com.mygdx.game.entity.character.AbstractCharacter;
 import com.mygdx.game.joystiq.XBox360ControllerCode;
 import com.mygdx.game.sprite.movement.EightWayMovementAnimation;
 import com.mygdx.game.util.SoundEffect;
@@ -16,6 +17,8 @@ public class PlayerCharacterSprite extends AbstractCharacterSprite {
 
   /** A set containing which keys are currently down. */
   protected final IntSet keysDown;
+  
+  protected static final float MINIMUM_AXIS_THRESHOLD = .2f;
   
   public PlayerCharacterSprite(EightWayMovementAnimation movementAnimation,
       Map<String, SoundEffect> footstepSoundEffects, TiledMapTileLayer collisionLayer, 
@@ -149,12 +152,12 @@ public class PlayerCharacterSprite extends AbstractCharacterSprite {
     boolean handled = false;
     switch (axisCode) {
       case XBox360ControllerCode.LEFT_Y_AXIS_CODE:
-        velocity.y = Math.abs(value) < .2 ? 0 : -speed * value;
+        velocity.y = Math.abs(value) < MINIMUM_AXIS_THRESHOLD ? 0 : -speed * value; 
         animationTime = 0;
         handled = true;
         break;
       case XBox360ControllerCode.LEFT_X_AXIS_CODE:
-        velocity.x = Math.abs(value) < .2 ? 0 : speed * value;
+        velocity.x = Math.abs(value) < MINIMUM_AXIS_THRESHOLD ? 0 : speed * value;
         animationTime = 0;
         handled = true;
         break;

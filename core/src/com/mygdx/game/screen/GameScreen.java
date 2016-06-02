@@ -15,7 +15,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 import com.mygdx.game.joystiq.XBox360ControllerCode;
 import com.mygdx.game.sprite.AbstractCharacterSprite;
-import com.mygdx.game.sprite.EnemyCharacterSprite;
+import com.mygdx.game.sprite.NonplayerCharacterSprite;
 import com.mygdx.game.sprite.PlayerCharacterSprite;
 import com.mygdx.game.sprite.movement.EightWayMovementAnimation;
 import com.mygdx.game.util.Assets;
@@ -40,9 +40,10 @@ public class GameScreen extends AbstractScreen {
   private List<AbstractCharacterSprite> characters;
   
   /** The indices of the background layers. */
-  private static final int BACKGROUND_LAYER_INDEX = 0; 
+  private static final int[] BACKGROUND_LAYER_INDICES = new int[] { 0 }; 
   /** The indices of the foreground layers. */
-  private static final int FOREGROUND_LAYERS_INDEX = 1;
+  private static final int[] FOREGROUND_LAYERS_INDICES = new int[] { 1 };
+  private static final int COLLISION_LAYER_INDEX = 0;
   
   /** A scalar for how much the width of the camera is zoomed in. */
   private float viewportWidthScalar;
@@ -57,6 +58,8 @@ public class GameScreen extends AbstractScreen {
   private static final float MAXIMUM_ZOOM = 1.24f;
   private static final float MINIMUM_ZOOM = .5f;
   private static final float DEFAULT_ZOOM = 1;
+  
+  private static final String MAP_PATH = "maps/map.tmx";
 
   public GameScreen() {
     viewportWidthScalar = DEFAULT_VIEWPORT_WIDTH_SCALAR;
@@ -76,7 +79,7 @@ public class GameScreen extends AbstractScreen {
     renderer.setView(camera);
 
     // Render the background layer
-    renderer.render(new int[] { BACKGROUND_LAYER_INDEX });
+    renderer.render(BACKGROUND_LAYER_INDICES);
 
     // Draw the main layer
     game.getSpriteBatch().begin();
@@ -86,7 +89,7 @@ public class GameScreen extends AbstractScreen {
     game.getSpriteBatch().end();
 
     // Render the foreground layer
-    renderer.render(new int[] { FOREGROUND_LAYERS_INDEX });
+    renderer.render(FOREGROUND_LAYERS_INDICES);
   }
 
   @Override
@@ -101,7 +104,7 @@ public class GameScreen extends AbstractScreen {
     super.show();
     
     // Setup the map
-    map = new TmxMapLoader().load("maps/map.tmx");
+    map = new TmxMapLoader().load(MAP_PATH);
 
     // Setup the camera
     camera = new OrthographicCamera();
@@ -184,7 +187,7 @@ public class GameScreen extends AbstractScreen {
     footstepSoundEffects.put("rocks", new SoundEffect(footstepSound, 40, .3f));
     
     TiledMapTileLayer backgroundLayer = (TiledMapTileLayer) map.getLayers()
-        .get(BACKGROUND_LAYER_INDEX);
+        .get(COLLISION_LAYER_INDEX);
     
     player = new PlayerCharacterSprite(movementAnimation, footstepSoundEffects, 
         backgroundLayer, characters);
@@ -257,9 +260,10 @@ public class GameScreen extends AbstractScreen {
     footstepSound = game.getAssetManager().get(Assets.FOOTSTEP_ROCKS_SOUND, Sound.class);
     footstepSoundEffects.put("rocks", new SoundEffect(footstepSound, 40, .3f));
     
-    AbstractCharacterSprite ogre = new EnemyCharacterSprite(movementAnimation, 
-        footstepSoundEffects, backgroundLayer, characters);
-    ogre.setPosition(250, 250);
+    AbstractCharacterSprite ogre = new NonplayerCharacterSprite(movementAnimation, 
+        footstepSoundEffects, backgroundLayer, characters, 250, 250, 
+        7 * backgroundLayer.getTileWidth(), 5 * backgroundLayer.getTileWidth(), 
+        10 * backgroundLayer.getTileWidth(), player);
     characters.add(ogre);
   }
 
@@ -331,7 +335,7 @@ public class GameScreen extends AbstractScreen {
           return true;
         case XBox360ControllerCode.A_BUTTON_CODE:
           // resets the zoom
-          camera.zoom = 1;
+          camera.zoom = DEFAULT_ZOOM;
           return true;
         case XBox360ControllerCode.LB_BUTTON_CODE:
           camera.zoom -= zoomIncrement;

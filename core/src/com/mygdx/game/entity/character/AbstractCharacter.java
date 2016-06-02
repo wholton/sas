@@ -53,7 +53,7 @@ public class AbstractCharacter {
   protected int shock;
   protected int bloodLoss;
   protected int pain;
-  protected boolean isDead;
+  protected boolean dead;
 
   public AbstractCharacter(String name, String sex, AbstractCulture culture) {
     this.name = name;
